@@ -348,8 +348,14 @@ export default function DashboardPage() {
                         // Split by newlines to preserve spacing
                         return trimmedContent.split('\n').map((line, lineIdx) => {
                             const cleanLine = line.trim();
-                            // Filter out raw link lines
-                            if (!cleanLine || cleanLine.startsWith('http://') || cleanLine.startsWith('https://') || cleanLine.includes('Link:')) {
+                            // Filter out raw link lines, empty bold wrappers, or link headers
+                            if (
+                                !cleanLine || 
+                                cleanLine.startsWith('http://') || 
+                                cleanLine.startsWith('https://') || 
+                                cleanLine.toLowerCase().includes('link') || 
+                                cleanLine === '**'
+                            ) {
                                 return null;
                             }
                             
