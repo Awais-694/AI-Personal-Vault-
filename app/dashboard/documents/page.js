@@ -88,7 +88,7 @@ export default function DocumentsCatalogPage() {
                     </div>
                     <Link
                         href="/dashboard"
-                        className="text-xs font-bold text-[#007cd1] bg-blue-50/40 hover:bg-blue-50 border border-blue-200/50 transition px-6 py-3 rounded-2xl uppercase tracking-wider shadow-sm self-start sm:self-auto"
+                        className="hidden sm:inline-block text-xs font-bold text-[#007cd1] bg-blue-50/40 hover:bg-blue-50 border border-blue-200/50 transition px-6 py-3 rounded-2xl uppercase tracking-wider shadow-sm self-start sm:self-auto"
                     >
                         ← Back to Panel
                     </Link>
