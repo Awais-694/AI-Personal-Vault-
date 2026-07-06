@@ -662,7 +662,7 @@ function DashboardContent() {
                 </div>
  
                 {/* PANEL RIGHT: INTELLIGENT CONTEXT-DRIVEN AI RETRIEVAL CONSOLE */}
-                <section className={`bg-white p-6 border border-gray-150 rounded-3xl shadow-sm space-y-4 justify-between min-h-[480px] flex flex-col ${
+                <section className={`bg-white p-7 border-2 border-[#007cd1]/35 rounded-[32px] shadow-sm space-y-4 justify-between min-h-[480px] flex flex-col ${
                     isMobileChatOpen 
                         ? "w-full" 
                         : "hidden lg:flex"
@@ -686,7 +686,7 @@ function DashboardContent() {
                     </div>
 
                     {/* Chat Messages Stream Container */}
-                    <div className="border border-gray-150 rounded-2xl p-4 bg-gray-50/30 flex-1 overflow-y-auto max-h-[300px] min-h-[250px] space-y-4 chat-scrollbar">
+                    <div className="px-1 py-5 bg-transparent flex-1 overflow-y-auto max-h-[300px] min-h-[250px] space-y-4 chat-scrollbar">
                         {chatMessages.map((msg) => {
                             const isBot = msg.sender === "bot";
                             return (
