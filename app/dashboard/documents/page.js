@@ -156,12 +156,18 @@ export default function DocumentsCatalogPage() {
                                         )}
 
                                         {/* Actions */}
-                                        <div className="flex items-center justify-start gap-3 pt-1">
+                                        <div className="flex items-center justify-start gap-3 pt-1 w-full">
                                             <Link
                                                 href={`/dashboard/documents/view?url=${encodeURIComponent(doc.fileUrl)}&title=${encodeURIComponent(doc.title)}&type=${doc.fileType}`}
-                                                className="bg-white md:bg-gradient-to-r md:from-[#00adef] md:to-[#007cd1] text-gray-900 md:text-white hover:bg-gray-100 md:hover:opacity-90 text-xs font-bold px-6 py-3.5 rounded-full uppercase tracking-wider transition shadow-md w-full md:w-auto text-center cursor-pointer"
+                                                className="bg-white md:bg-gradient-to-r md:from-[#00adef] md:to-[#007cd1] text-gray-900 md:text-white hover:bg-gray-100 md:hover:opacity-90 text-xs font-bold px-6 py-3.5 rounded-full uppercase tracking-wider transition shadow-md flex-1 md:flex-initial text-center cursor-pointer"
                                             >
-                                                View Document
+                                                View
+                                            </Link>
+                                            <Link
+                                                href="/dashboard"
+                                                className="bg-white/10 md:bg-white border border-white/20 md:border-gray-200 text-white md:text-gray-700 hover:bg-white/20 md:hover:bg-gray-50 text-xs font-bold px-6 py-3.5 rounded-full uppercase tracking-wider transition shadow-md flex-1 md:flex-initial text-center cursor-pointer"
+                                            >
+                                                Edit
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(doc._id)}
