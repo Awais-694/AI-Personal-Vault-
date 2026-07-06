@@ -59,9 +59,24 @@ export default function DocumentsCatalogPage() {
     };
 
     const handleDelete = async (docId) => {
-        // Option to add delete functionality if needed
-        // For now, simple confirmation warning check
-        console.log("Delete request for node:", docId);
+        if (!confirm("Bhai, kya aap waqai is document ko permanently delete karna chahte hain?")) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/documents?id=${docId}`, {
+                method: "DELETE"
+            });
+            const data = await res.json();
+            if (data.success) {
+                await fetchUserDocuments();
+            } else {
+                alert(data.message || "Failed to delete document.");
+            }
+        } catch (err) {
+            console.error("Delete handler error:", err);
+            alert("Connection error: Failed to contact delete server.");
+        }
     };
 
     if (loading) {
@@ -164,7 +179,7 @@ export default function DocumentsCatalogPage() {
                                                 View
                                             </Link>
                                             <Link
-                                                href="/dashboard"
+                                                href={`/dashboard?edit=true&id=${doc._id}&title=${encodeURIComponent(doc.title)}&description=${encodeURIComponent(doc.description || "")}&tags=${encodeURIComponent((doc.tags || []).join(","))}`}
                                                 className="bg-white/10 md:bg-white border border-white/20 md:border-gray-200 text-white md:text-gray-700 hover:bg-white/20 md:hover:bg-gray-50 text-xs font-bold px-6 py-3.5 rounded-full uppercase tracking-wider transition shadow-md flex-1 md:flex-initial text-center cursor-pointer"
                                             >
                                                 Edit

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import connectDB from "@/lib/db";
 import Document from "@/models/Document";
 import { cookies } from "next/headers";
+import crypto from "crypto";
 
 // Helper function to authenticate token and return decoded payload
 async function getAuthenticatedUser() {
@@ -153,6 +154,92 @@ export async function PUT(request) {
         console.error("Document registry update crash:", error);
         return NextResponse.json(
             { success: false, message: "Internal server error while updating document entry." },
+            { status: 500 }
+        );
+    }
+}
+
+export async function DELETE(request) {
+    try {
+        const decoded = await getAuthenticatedUser();
+        if (!decoded) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized: Active session missing." },
+                { status: 401 }
+            );
+        }
+
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get("id");
+
+        if (!id) {
+            return NextResponse.json(
+                { success: false, message: "Document ID is required." },
+                { status: 400 }
+            );
+        }
+
+        await connectDB();
+        const doc = await Document.findOne({ _id: id, userId: decoded.userId });
+        if (!doc) {
+            return NextResponse.json(
+                { success: false, message: "Document not found or unauthorized access." },
+                { status: 404 }
+            );
+        }
+
+        // 1. Delete from Cloudinary if Cloudinary URL is present
+        if (doc.fileUrl && doc.fileUrl.includes("cloudinary.com")) {
+            const cloudinaryUrl = process.env.CLOUDINARY_URL;
+            if (cloudinaryUrl) {
+                const configRegex = /cloudinary:\/\/([^:]+):([^@]+)@(.+)/;
+                const match = cloudinaryUrl.match(configRegex);
+                if (match) {
+                    const [, apiKey, apiSecret, cloudName] = match;
+                    
+                    const urlParts = doc.fileUrl.split('/');
+                    const uploadIndex = urlParts.indexOf('upload');
+                    if (uploadIndex !== -1) {
+                        const postUploadParts = urlParts.slice(uploadIndex + 1);
+                        if (postUploadParts[0].match(/^v\d+$/)) {
+                            postUploadParts.shift();
+                        }
+                        const publicIdWithExtension = postUploadParts.join('/');
+                        const publicId = publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf('.'));
+                        
+                        if (publicId) {
+                            const timestamp = Math.floor(Date.now() / 1000);
+                            const signatureStr = `public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+                            const signature = crypto.createHash("sha1").update(signatureStr).digest("hex");
+                            
+                            const destroyFormData = new FormData();
+                            destroyFormData.append("public_id", publicId);
+                            destroyFormData.append("api_key", apiKey);
+                            destroyFormData.append("timestamp", timestamp);
+                            destroyFormData.append("signature", signature);
+                            
+                            await fetch(
+                                `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`,
+                                { method: "POST", body: destroyFormData }
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Delete from MongoDB Atlas
+        await Document.deleteOne({ _id: id });
+
+        return NextResponse.json({
+            success: true,
+            message: "Document successfully deleted from vault and cloud storage."
+        });
+
+    } catch (error) {
+        console.error("Document registry deletion crash:", error);
+        return NextResponse.json(
+            { success: false, message: "Internal server error while deleting document entry." },
             { status: 500 }
         );
     }
