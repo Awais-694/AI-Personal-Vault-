@@ -762,6 +762,13 @@ function DashboardContent() {
                                     >
                                         App Usage Guide
                                     </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => handleChatSubmit(e, "Bhai, main is AI Assistant se kaun kaun se sawaal pooch sakta hoon? Ek guideline list de dein.")}
+                                        className="border border-blue-200/50 bg-blue-50/30 hover:bg-blue-50/80 hover:scale-102 hover:shadow-sm text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-300"
+                                    >
+                                        Kya Sawaal Poochein?
+                                    </button>
                                 </>
                             ) : (
                                 <>
@@ -785,6 +792,13 @@ function DashboardContent() {
                                         className="border border-blue-200/50 bg-blue-50/30 hover:bg-blue-50/80 hover:scale-102 hover:shadow-sm text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-300"
                                     >
                                         App Usage Guide
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => handleChatSubmit(e, "Bhai, main is AI Assistant se kaun kaun se sawaal pooch sakta hoon? Ek guideline list de dein.")}
+                                        className="border border-blue-200/50 bg-blue-50/30 hover:bg-blue-50/80 hover:scale-102 hover:shadow-sm text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-300"
+                                    >
+                                        Kya Sawaal Poochein?
                                     </button>
                                 </>
                             )}

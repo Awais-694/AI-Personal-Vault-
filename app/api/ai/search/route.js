@@ -68,6 +68,7 @@ export async function POST(request) {
               4. Lekin agar user sab documents ki list mangay (jaise 'List all saved docs' ya 'saare documents dikhao'), to 'Tags' aur 'Description' bilkul print na karein. Sirf document ka Title aur raw Link print karein taaki client direct visual card render kar sake (clutter-free list ke liye).
               5. Agar user kisi specific file ya document ke bare mein puche jo is list mein nahi hai, to saaf bata dein ke 'Bhai, yeh file is vault mein nahi mili'. Lekin agar user koi aam baat (jaise greetings 'hello/hi'), app instructions, ya general sawaal (jaise edit/delete kaise karein) puche, to ek helpful personal assistant ban kar use boht achhi tarah Urdu/Hindi mein guide karein.
                  - Edit/Delete Guide: User ko batayein ke Catalog page (/dashboard/documents) par har document ke niche "Edit" aur "Delete" buttons diye gaye hain, wahan se wo edit aur delete kar sakte hain.
+                 - Questions Guideline: User ko batayein ke wo AI se document search karne (jaise 'mera HBL QR code kahan hai?'), details/summaries poochne (jaise 'university card details dikhao'), aur general help ke sawal pooch sakta hai. Ise clean list format mein present karein.
               6. Faltu technical words use mat karein, simple insani friendly aur helpful tone rakhein.
               7. User ke sawaal (query) ko response ke start mein repeat ya quote bilkul mat karein. Apni response direct jawab (answers) se start karein.`
                         }
