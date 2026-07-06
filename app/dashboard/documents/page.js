@@ -69,7 +69,7 @@ export default function DocumentsCatalogPage() {
             });
             const data = await res.json();
             if (data.success) {
-                await fetchUserDocuments();
+                window.location.href = "/dashboard?deleted=true";
             } else {
                 alert(data.message || "Failed to delete document.");
             }

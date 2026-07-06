@@ -1,12 +1,13 @@
 // app/dashboard/page.js
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function DashboardPage() {
+function DashboardContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     // 💾 State Management Matrix for Documents & Uploads
     const [documents, setDocuments] = useState([]);
@@ -27,41 +28,41 @@ export default function DashboardPage() {
 
     const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
-    // Watch for mobile chat and edit mode toggle query parameters
+    const editParam = searchParams.get("edit");
+    const idParam = searchParams.get("id");
+    const titleParam = searchParams.get("title");
+    const descParam = searchParams.get("description");
+    const tagsParam = searchParams.get("tags");
+    const chatParam = searchParams.get("chat");
+    const deletedParam = searchParams.get("deleted");
+
+    // Watch for mobile chat toggle
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const checkParams = () => {
-                const searchParams = new URLSearchParams(window.location.search);
-                setIsMobileChatOpen(searchParams.get("chat") === "true");
-                
-                const isEdit = searchParams.get("edit") === "true";
-                if (isEdit) {
-                    const id = searchParams.get("id");
-                    const title = searchParams.get("title") || "";
-                    const desc = searchParams.get("description") || "";
-                    const tags = searchParams.get("tags") || "";
-                    
-                    setEditId(id);
-                    setUploadData((prev) => {
-                        if (prev.title !== title || prev.description !== desc || prev.tags !== tags) {
-                            return { title, description: desc, tags };
-                        }
-                        return prev;
-                    });
-                } else {
-                    setEditId(null);
-                }
-            };
-            checkParams();
-            
-            window.addEventListener("popstate", checkParams);
-            const interval = setInterval(checkParams, 200);
-            return () => {
-                window.removeEventListener("popstate", checkParams);
-                clearInterval(interval);
-            };
+        setIsMobileChatOpen(chatParam === "true");
+    }, [chatParam]);
+
+    // Watch for edit mode changes and populate fields reactively
+    useEffect(() => {
+        if (editParam === "true" && idParam) {
+            setEditId(idParam);
+            setUploadData({
+                title: titleParam || "",
+                description: descParam || "",
+                tags: tagsParam || ""
+            });
+        } else {
+            setEditId(null);
+            setUploadData({ title: "", description: "", tags: "" });
         }
-    }, []);
+    }, [editParam, idParam, titleParam, descParam, tagsParam]);
+
+    // Watch for deletion success parameter and show system flash alert
+    useEffect(() => {
+        if (deletedParam === "true") {
+            triggerSystemAlert("Success! The document has been permanently deleted from vault and cloud storage.", "success");
+            router.replace("/dashboard");
+        }
+    }, [deletedParam]);
 
     // Auto-scroll to bottom of chat
     useEffect(() => {
@@ -784,5 +785,21 @@ export default function DashboardPage() {
 
 
         </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-slate-100 via-blue-50 to-white">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="relative w-12 h-12">
+                        <div className="absolute inset-0 rounded-full border-4 border-slate-100 border-t-[#00adef] animate-spin"></div>
+                    </div>
+                </div>
+            </div>
+        }>
+            <DashboardContent />
+        </Suspense>
     );
 }
