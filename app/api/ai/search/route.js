@@ -49,28 +49,22 @@ export async function POST(request) {
                     model: "llama-3.1-8b-instant",
                     messages: [
                         {
+                            role: "system",
+                            content: `Aap ek personal vault AI document assistant hain. Aapka kaam user ko uske secure vault documents ke baare mein inform karna hai.
+ 
+Mere personal vault mein saved documents ki actual database list neeche di gayi hai:
+${documentsContext || "Is waqt database vault bilkul khali hai, koi documents nahi hain."}
+
+Rules for response formatting:
+1. User ke sawaal ka bilkul direct, specific aur seedha jawab Urdu ya Hindi mein dein (faltu technical words ya dialog markers mat use karein).
+2. Sawaal ko repeat bilkul mat karein. "User ne aapko..." ya "Aapka Jawab:" jaise sentences bilkul use nahi karne. Direct reply likhein.
+3. Jab user koi specific document/photo search kare ya us ke bare mein pooche, to us document ka Title aur Details likhein aur us ka raw Link (fileUrl) response ke aakhir mein LAZMI print karein (e.g. Link: https://res.cloudinary.com/...) taaki client visual card (with preview and "View Document" button) render kar sake.
+4. Agar user sab documents ki list mangay, to sirf har document ka Title aur us ka raw Link print karein. List items mein 'Description:' ya 'Tags:' headings bilkul print na karein (taaki visual cards clean list ho sakain).
+5. Agar user kisi specific file ke bare mein puche jo list mein nahi hai, to saaf bata dein ke 'Bhai, yeh file is vault mein nahi mili'. Lekin agar user greeting (hello/hi) ya general help (edit/delete kaise karein) poochay, to friendly guider ki tarah guide karein (Edit/delete ke liye user ko batayein ke wo 'Documents Records' page par ja kar perform kar sakta hai).`
+                        },
+                        {
                             role: "user",
-                            content: `Aap ek personal vault AI document assistant hain. User aap se Urdu/Hindi ya English mein sawaal puchega ke uski documents, photos ya certificates is secure storage system mein hain ya nahi, ya phir kisi document ki summary ya details ke baare mein poochega.
-
-              Mere personal vault mein saved documents ki actual database list neeche di gayi hai:
-              ${documentsContext || "Is waqt database vault bilkul khali hai, koi documents nahi hain."}
-
-              User ka sawaal hai: "${userQuery}"
-
-              Rules for response formatting:
-              1. Is list ko achhi tarah parhein aur user ke sawaal ka bilkul specific aur seedha jawab Urdu ya Hindi mein dein.
-              2. Agar user kisi document ki summary ya details ke baare mein pooche (jaise "yeh document kis baare mein hai" ya "summarize this document"), to list mein se us document ki Description aur Title ko use karke ek achhi aur clear summary (agar zaroori ho to points mein) Urdu/Hindi mein provide karein.
-              3. Agar user kisi specific document/photo ke bare mein pooche (information ya summary mangay), to us file ka details lazmi is format mein clean list karein:
-                 **Title**: [file ka Title]
-                 **Tags**: [file ke comma separated tags]
-                 **Description**: [file ki description ya info]
-                 Aur us ka raw Link (fileUrl) lazmi print karein taaki link client render ho sake.
-              4. Lekin agar user sab documents ki list mangay (jaise 'List all saved docs' ya 'saare documents dikhao'), to 'Tags' aur 'Description' bilkul print na karein. Sirf document ka Title aur raw Link print karein taaki client direct visual card render kar sake (clutter-free list ke liye).
-              5. Agar user kisi specific file ya document ke bare mein puche jo is list mein nahi hai, to saaf bata dein ke 'Bhai, yeh file is vault mein nahi mili'. Lekin agar user koi aam baat (jaise greetings 'hello/hi'), app instructions, ya general sawaal (jaise edit/delete kaise karein) puche, to ek helpful personal assistant ban kar use boht achhi tarah Urdu/Hindi mein guide karein.
-                 - Edit/Delete Guide: User ko batayein ke agar wo apne saved documents ko edit ya delete karna chahta hai, to use "Documents Records" page (/dashboard/documents) par jana hoga. Wahan har document card ke niche use clear "Edit" aur "Delete" options milenge jahan se wo actions perform kar sakta hai. Ise bilkul professional and clean points mein Urdu/Hindi mein guide karein.
-                 - Questions Guideline: User ko batayein ke wo AI se document search karne (jaise 'mera HBL QR code kahan hai?'), details/summaries poochne (jaise 'university card details dikhao'), aur general help ke sawal pooch sakta hai. Ise clean list format mein present karein.
-              6. Faltu technical words use mat karein, simple insani friendly aur helpful tone rakhein.
-              7. User ke sawaal (query) ko response ke start mein repeat ya quote bilkul mat karein. Apni response direct jawab (answers) se start karein.`
+                            content: userQuery
                         }
                     ]
                 })
