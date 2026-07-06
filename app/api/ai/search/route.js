@@ -28,23 +28,29 @@ export async function POST(request) {
         )).join("\n");
 
         // 5. Build environment runtime keys validation checkpoints
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) {
             return NextResponse.json(
-                { success: false, message: "Gemini API key missing in runtime process variables" },
+                { success: false, message: "Groq API key missing in runtime process variables" },
                 { status: 500 }
             );
         }
 
-        // 6. Direct HTTP client communications hitting Google AI Studio REST Engine (Bypassing heavy SDK)
+        // 6. Direct HTTP client communications hitting Groq REST Engine (Bypassing heavy SDK)
         const aiResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-            { method: "POST",
-                headers: { "Content-Type": "application/json" },
+            "https://api.groq.com/openai/v1/chat/completions",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `Aap ek personal vault AI document assistant hain. User aap se Urdu/Hindi ya English mein sawaal puchega ke uski documents, photos ya certificates is secure storage system mein hain ya nahi, ya phir kisi document ki summary ya details ke baare mein poochega.
+                    model: "llama-3.1-8b-instant",
+                    messages: [
+                        {
+                            role: "user",
+                            content: `Aap ek personal vault AI document assistant hain. User aap se Urdu/Hindi ya English mein sawaal puchega ke uski documents, photos ya certificates is secure storage system mein hain ya nahi, ya phir kisi document ki summary ya details ke baare mein poochega.
 
               Mere personal vault mein saved documents ki actual database list neeche di gayi hai:
               ${documentsContext || "Is waqt database vault bilkul khali hai, koi documents nahi hain."}
@@ -61,8 +67,8 @@ export async function POST(request) {
                  Aur us ka raw Link (fileUrl) lazmi print karein taaki link client render ho sake.
               4. Agar user kisi aisi file ke bare mein puche jo list mein nahi hai, to saaf bata dein ke 'Bhai, yeh file is vault mein nahi mili'.
               5. Faltu technical words use mat karein, simple insani friendly tone rakhein.`
-                        }]
-                    }]
+                        }
+                    ]
                 })
             }
         );
@@ -71,33 +77,29 @@ export async function POST(request) {
 
         // Safety handling evaluation constraints checking matrix
         if (!aiResponse.ok) {
-            console.error("❌ Gemini API HTTP Error Status:", aiResponse.status);
-            console.error("❌ Gemini API Error response:", JSON.stringify(aiData));
+            console.error("❌ Groq API HTTP Error Status:", aiResponse.status);
+            console.error("❌ Groq API Error response:", JSON.stringify(aiData));
             
             let displayMessage = aiData.error?.message || "AI Engine rejected the query payload.";
-            if (aiResponse.status === 503) {
-                displayMessage = "Gemini API servers are currently experiencing high demand (503 Service Unavailable). Please wait a few seconds and try sending your message again.";
-            }
-
             return NextResponse.json({ 
                 success: false, 
                 message: displayMessage 
             }, { status: aiResponse.status || 500 });
         }
 
-        if (!aiData.candidates || aiData.candidates.length === 0) {
-            console.error("❌ Gemini API returned no candidates. Full response:", JSON.stringify(aiData));
+        if (!aiData.choices || aiData.choices.length === 0) {
+            console.error("❌ Groq API returned no choices. Full response:", JSON.stringify(aiData));
             return NextResponse.json({ 
                 success: false, 
-                message: "AI Engine returned empty response. (Safety block or model filter)" 
+                message: "AI Engine returned empty response." 
             }, { status: 500 });
         }
 
-        const aiAnswer = aiData.candidates[0].content.parts[0].text;
+        const aiAnswer = aiData.choices[0].message.content;
 
         return NextResponse.json({
             success: true,
-            answer: aiAnswer // Response payload holding conversational analytics guide response
+            answer: aiAnswer
         });
 
     } catch (error) {
