@@ -455,28 +455,28 @@ function DashboardContent() {
                                         key={idx}
                                         href={targetHref}
                                         target={isInternal ? "_self" : "_blank"}
-                                        className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition group text-left w-full overflow-hidden cursor-pointer"
+                                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 bg-white border border-slate-200 rounded-[24px] hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition gap-3 text-left w-full overflow-hidden cursor-pointer"
                                     >
-                                        <div className="flex items-center gap-2.5 min-w-0 mr-2">
+                                        <div className="flex items-center gap-3 min-w-0">
                                             {isImage ? (
                                                 <img 
                                                     src={cleanUrl} 
                                                     alt="Preview" 
-                                                    className="w-10 h-10 object-cover rounded-xl border border-slate-100 shrink-0" 
+                                                    className="w-12 h-12 object-cover rounded-xl border border-slate-100 shrink-0" 
                                                 />
                                             ) : (
-                                                <span className="text-base shrink-0">📂</span>
+                                                <span className="text-xl shrink-0">📂</span>
                                             )}
                                             <div className="min-w-0">
-                                                <p className="text-[10px] font-black text-gray-800 uppercase tracking-tight truncate max-w-[150px] sm:max-w-[250px]">
+                                                <p className="text-[11px] sm:text-xs font-black text-gray-800 uppercase tracking-tight">
                                                     {matchedDoc ? matchedDoc.title : "External Secured Asset"}
                                                 </p>
-                                                <p className="text-[8px] text-[#007cd1] font-bold truncate max-w-[150px] sm:max-w-[250px]">
+                                                <p className="text-[9px] text-[#007cd1] font-bold">
                                                     {isInternal ? "Saved in Vault Records" : cleanUrl}
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className="bg-[#00adef] group-hover:bg-[#0089e0] text-white text-[9px] font-black px-3 py-2 rounded-xl uppercase tracking-wider transition shrink-0">
+                                        <span className="w-full sm:w-auto text-center bg-[#00adef] group-hover:bg-[#0089e0] text-white text-[9px] font-black px-4 py-2.5 rounded-xl uppercase tracking-wider transition shrink-0">
                                             {isInternal ? "View Document" : "Open Link"}
                                         </span>
                                     </Link>
