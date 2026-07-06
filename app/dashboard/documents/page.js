@@ -8,6 +8,12 @@ export default function DocumentsCatalogPage() {
     const [documents, setDocuments] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [systemMessage, setSystemMessage] = useState({ text: "", type: "" });
+
+    const triggerSystemAlert = (text, type) => {
+        setSystemMessage({ text, type });
+        setTimeout(() => setSystemMessage({ text: "", type: "" }), 5000);
+    };
 
     useEffect(() => {
         const checkAuthAndLoad = async () => {
@@ -59,23 +65,20 @@ export default function DocumentsCatalogPage() {
     };
 
     const handleDelete = async (docId) => {
-        if (!confirm("Bhai, kya aap waqai is document ko permanently delete karna chahte hain?")) {
-            return;
-        }
-
         try {
             const res = await fetch(`/api/documents?id=${docId}`, {
                 method: "DELETE"
             });
             const data = await res.json();
             if (data.success) {
-                window.location.href = "/dashboard?deleted=true";
+                triggerSystemAlert("Success! The document has been permanently deleted from vault and cloud storage.", "success");
+                await fetchUserDocuments();
             } else {
-                alert(data.message || "Failed to delete document.");
+                triggerSystemAlert(data.message || "Failed to delete document.", "error");
             }
         } catch (err) {
             console.error("Delete handler error:", err);
-            alert("Connection error: Failed to contact delete server.");
+            triggerSystemAlert("Connection error: Failed to contact delete server.", "error");
         }
     };
 
@@ -108,6 +111,17 @@ export default function DocumentsCatalogPage() {
                         ← Back to Panel
                     </Link>
                 </div>
+
+                {systemMessage.text && (
+                    <div className={`p-4 rounded-2xl text-xs font-bold border transition-all duration-300 flex items-center gap-2 ${
+                        systemMessage.type === "success" ? "bg-green-50 text-green-700 border-green-150" :
+                        systemMessage.type === "error" ? "bg-red-50 text-red-700 border-red-150" :
+                        "bg-blue-50 text-blue-700 border-blue-150"
+                    }`}>
+                        <span>{systemMessage.type === "success" ? "✅" : "❌"}</span>
+                        <span>{systemMessage.text}</span>
+                    </div>
+                )}
 
                 {documents.length === 0 ? (
                     <div className="bg-white p-12 text-center rounded-[32px] border border-slate-150 shadow-sm space-y-4">
