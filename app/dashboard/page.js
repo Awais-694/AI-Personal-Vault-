@@ -313,7 +313,8 @@ function DashboardContent() {
     const formatAiResponse = (text) => {
         if (!text) return null;
         const urlRegex = /(https?:\/\/[^\s\)]+)/g;
-        const urlsFound = text.match(urlRegex) || [];
+        const rawUrls = text.match(urlRegex) || [];
+        const urlsFound = Array.from(new Set(rawUrls.map(url => url.replace(/[\.\,\)]$/, ''))));
         
         // This regex matches "Title: ... Tags: ... Description: ..." inline or multi-line
         const docRegex = /(?:Title|Title\*\*)\s*:\s*([\s\S]*?)(?:Tags|Tags\*\*)\s*:\s*([\s\S]*?)(?:Description|Description\*\*)\s*:\s*([\s\S]*?)(?=(?:Title|Title\*\*|Tags|Tags\*\*|Description|Description\*\*|Link|Link\*\*)\s*:|\n\n|$)/gi;
@@ -442,7 +443,7 @@ function DashboardContent() {
                         <div className="text-[9px] font-black uppercase text-[#007cd1] tracking-wider text-left">🔗 Detected Vault Secure Assets:</div>
                         <div className="grid gap-2">
                             {urlsFound.map((url, idx) => {
-                                const cleanUrl = url.replace(/[\.\,\)]$/, '');
+                                const cleanUrl = url;
                                 const matchedDoc = documents.find(d => d.fileUrl === cleanUrl);
                                 const targetHref = matchedDoc 
                                     ? `/dashboard/documents#${matchedDoc._id}` 
