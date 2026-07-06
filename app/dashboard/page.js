@@ -316,42 +316,54 @@ function DashboardContent() {
         const rawUrls = text.match(urlRegex) || [];
         const urlsFound = Array.from(new Set(rawUrls.map(url => url.replace(/[\.\,\)]$/, ''))));
         
-        // This regex matches "Title: ... Tags: ... Description: ..." inline or multi-line
-        const docRegex = /(?:Title|Title\*\*)\s*:\s*([\s\S]*?)(?:Tags|Tags\*\*)\s*:\s*([\s\S]*?)(?:Description|Description\*\*)\s*:\s*([\s\S]*?)(?=(?:Title|Title\*\*|Tags|Tags\*\*|Description|Description\*\*|Link|Link\*\*)\s*:|\n\n|$)/gi;
-        
         const blocks = [];
-        let lastIndex = 0;
-        let match;
-        
-        // Reset regex index
-        docRegex.lastIndex = 0;
-        
-        while ((match = docRegex.exec(text)) !== null) {
-            const matchIndex = match.index;
-            // Add preceding text as a text block
-            if (matchIndex > lastIndex) {
-                blocks.push({
-                    type: "text",
-                    content: text.substring(lastIndex, matchIndex)
-                });
-            }
+        const titleRegex = /(?:Title|Title\*\*)\s*:\s*([^\n]+)/gi;
+        const matches = [];
+        let titleMatch;
+        titleRegex.lastIndex = 0;
+        while ((titleMatch = titleRegex.exec(text)) !== null) {
+            matches.push({
+                index: titleMatch.index,
+                title: titleMatch[1].replace(/^\*\*|\*\*$/g, '').trim()
+            });
+        }
+
+        let lastIdx = 0;
+        for (let idx = 0; idx < matches.length; idx++) {
+            const currentMatch = matches[idx];
+            const nextMatch = matches[idx + 1];
             
-            // Add document block
+            // Text before the first Title
+            if (idx === 0 && currentMatch.index > lastIdx) {
+                const textBefore = text.substring(lastIdx, currentMatch.index).trim();
+                if (textBefore) {
+                    blocks.push({ type: "text", content: textBefore });
+                }
+            }
+
+            const start = currentMatch.index;
+            const end = nextMatch ? nextMatch.index : text.length;
+            const blockContent = text.substring(start, end);
+
+            // Extract Tags and Description from the blockContent
+            const tagsMatch = blockContent.match(/(?:Tags|Tags\*\*)\s*:\s*([^\n]+)/i);
+            const descMatch = blockContent.match(/(?:Description|Description\*\*)\s*:\s*([\s\S]+?)(?=(?:Link|Link\*\*|Title|Title\*\*)\s*:|\n\n|$)/i);
+
             blocks.push({
                 type: "document",
-                title: match[1].replace(/^\*\*|\*\*$/g, '').trim(),
-                tags: match[2].replace(/^\*\*|\*\*$/g, '').trim(),
-                description: match[3].replace(/^\*\*|\*\*$/g, '').trim()
+                title: currentMatch.title,
+                tags: tagsMatch ? tagsMatch[1].replace(/^\*\*|\*\*$/g, '').trim() : "",
+                description: descMatch ? descMatch[1].replace(/^\*\*|\*\*$/g, '').trim() : ""
             });
-            
-            lastIndex = docRegex.lastIndex;
+
+            lastIdx = end;
         }
-        
-        // Add remaining text
-        if (lastIndex < text.length) {
+
+        // Add remaining text if no documents found
+        if (matches.length === 0) {
             blocks.push({
                 type: "text",
-                content: text.substring(lastIndex)
+                content: text
             });
         }
         
