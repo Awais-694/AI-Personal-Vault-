@@ -95,3 +95,65 @@ export async function POST(request) {
         );
     }
 }
+
+export async function PUT(request) {
+    try {
+        const decoded = await getAuthenticatedUser();
+        if (!decoded) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized: Active session missing." },
+                { status: 401 }
+            );
+        }
+
+        const { id, title, description, fileUrl, fileType, tags } = await request.json();
+
+        if (!id || !title) {
+            return NextResponse.json(
+                { success: false, message: "Document ID and Title are required variables." },
+                { status: 400 }
+            );
+        }
+
+        let processedTags = [];
+        if (typeof tags === "string") {
+            processedTags = tags.split(",").map(t => t.trim()).filter(Boolean);
+        } else if (Array.isArray(tags)) {
+            processedTags = tags.map(t => String(t).trim()).filter(Boolean);
+        }
+
+        await connectDB();
+        const doc = await Document.findOne({ _id: id, userId: decoded.userId });
+        if (!doc) {
+            return NextResponse.json(
+                { success: false, message: "Document not found or unauthorized access." },
+                { status: 404 }
+            );
+        }
+
+        doc.title = title;
+        doc.description = description || "";
+        doc.tags = processedTags;
+        if (fileUrl) {
+            doc.fileUrl = fileUrl;
+        }
+        if (fileType) {
+            doc.fileType = fileType;
+        }
+
+        await doc.save();
+
+        return NextResponse.json({
+            success: true,
+            message: "Document successfully updated in secure registry.",
+            document: doc
+        });
+
+    } catch (error) {
+        console.error("Document registry update crash:", error);
+        return NextResponse.json(
+            { success: false, message: "Internal server error while updating document entry." },
+            { status: 500 }
+        );
+    }
+}

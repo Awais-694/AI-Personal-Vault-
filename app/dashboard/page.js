@@ -13,6 +13,7 @@ export default function DashboardPage() {
     const [uploadData, setUploadData] = useState({ title: "", description: "", tags: "" });
     const [selectedFile, setSelectedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [editId, setEditId] = useState(null);
 
     // 👤 User State & Loading
     const [currentUser, setCurrentUser] = useState(null);
@@ -26,18 +27,37 @@ export default function DashboardPage() {
 
     const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
-    // Watch for mobile chat toggle query parameter
+    // Watch for mobile chat and edit mode toggle query parameters
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const checkChatParam = () => {
-                setIsMobileChatOpen(window.location.search.includes("chat=true"));
+            const checkParams = () => {
+                const searchParams = new URLSearchParams(window.location.search);
+                setIsMobileChatOpen(searchParams.get("chat") === "true");
+                
+                const isEdit = searchParams.get("edit") === "true";
+                if (isEdit) {
+                    const id = searchParams.get("id");
+                    const title = searchParams.get("title") || "";
+                    const desc = searchParams.get("description") || "";
+                    const tags = searchParams.get("tags") || "";
+                    
+                    setEditId(id);
+                    setUploadData((prev) => {
+                        if (prev.title !== title || prev.description !== desc || prev.tags !== tags) {
+                            return { title, description: desc, tags };
+                        }
+                        return prev;
+                    });
+                } else {
+                    setEditId(null);
+                }
             };
-            checkChatParam();
+            checkParams();
             
-            window.addEventListener("popstate", checkChatParam);
-            const interval = setInterval(checkChatParam, 200);
+            window.addEventListener("popstate", checkParams);
+            const interval = setInterval(checkParams, 200);
             return () => {
-                window.removeEventListener("popstate", checkChatParam);
+                window.removeEventListener("popstate", checkParams);
                 clearInterval(interval);
             };
         }
@@ -99,67 +119,97 @@ export default function DashboardPage() {
     // 2. Binary Upload Stream Runner Routine
     const handleUploadSubmit = async (e) => {
         e.preventDefault();
-        if (!selectedFile) {
+        if (!editId && !selectedFile) {
             triggerSystemAlert("Bhai, pehle koi image ya file select kar lein!", "error");
             return;
         }
 
         setIsUploading(true);
-        triggerSystemAlert("Streaming binary matrix directly to Cloudinary...", "info");
+        triggerSystemAlert(editId ? "Saving updates..." : "Streaming binary matrix directly to Cloudinary...", "info");
 
         try {
-            // Step A: Trigger base64 streaming route handler to dispatch cloud upload
-            const uploadFormData = new FormData();
-            uploadFormData.append("file", selectedFile);
+            let fileUrl = null;
+            let fileType = null;
 
-            const cloudRes = await fetch("/api/upload", {
-                method: "POST",
-                body: uploadFormData,
-            });
+            if (selectedFile) {
+                const uploadFormData = new FormData();
+                uploadFormData.append("file", selectedFile);
 
-            const cloudData = await cloudRes.json();
+                const cloudRes = await fetch("/api/upload", {
+                    method: "POST",
+                    body: uploadFormData,
+                });
 
-            if (!cloudData.success) {
-                throw new Error(cloudData.message || "Cloud link execution failed.");
+                const cloudData = await cloudRes.json();
+
+                if (!cloudData.success) {
+                    throw new Error(cloudData.message || "Cloud link execution failed.");
+                }
+                
+                fileUrl = cloudData.url;
+                fileType = selectedFile.type.startsWith("image/") ? "image" : (selectedFile.type === "application/pdf" ? "pdf" : "other");
             }
 
-            triggerSystemAlert("Cloud storage validated! Registering document properties inside MongoDB Atlas...", "info");
+            if (editId) {
+                // UPDATE MODE
+                const docRes = await fetch("/api/documents", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: editId,
+                        title: uploadData.title,
+                        description: uploadData.description,
+                        tags: uploadData.tags,
+                        fileUrl,
+                        fileType
+                    })
+                });
 
-            // Step B: Integration mapping payload creation structure for document entries
-            let fileType = "other";
-            if (selectedFile.type.startsWith("image/")) {
-                fileType = "image";
-            } else if (selectedFile.type === "application/pdf") {
-                fileType = "pdf";
+                const docData = await docRes.json();
+                if (!docData.success) {
+                    throw new Error(docData.message || "Failed to update document metadata in database.");
+                }
+
+                triggerSystemAlert("Success! Your document has been updated.", "success");
+                setUploadData({ title: "", description: "", tags: "" });
+                setSelectedFile(null);
+                setEditId(null);
+                e.target.reset();
+
+                await fetchUserDocuments();
+                setTimeout(() => {
+                    router.push("/dashboard/documents");
+                }, 2000);
+
+            } else {
+                // CREATE MODE
+                const docRes = await fetch("/api/documents", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        title: uploadData.title,
+                        description: uploadData.description,
+                        tags: uploadData.tags,
+                        fileUrl,
+                        fileType: fileType || "image"
+                    })
+                });
+
+                const docData = await docRes.json();
+                if (!docData.success) {
+                    throw new Error(docData.message || "Failed to save document metadata in database.");
+                }
+
+                triggerSystemAlert("Success! Your document has been uploaded and stored safely.", "success");
+                setUploadData({ title: "", description: "", tags: "" });
+                setSelectedFile(null);
+                e.target.reset();
+
+                await fetchUserDocuments();
+                setTimeout(() => {
+                    router.push("/dashboard/documents");
+                }, 2000);
             }
-
-            const docRes = await fetch("/api/documents", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: uploadData.title,
-                    description: uploadData.description,
-                    tags: uploadData.tags,
-                    fileUrl: cloudData.url,
-                    fileType
-                })
-            });
-
-            const docData = await docRes.json();
-            if (!docData.success) {
-                throw new Error(docData.message || "Failed to save document metadata in database.");
-            }
-
-            triggerSystemAlert("Success! Your document has been uploaded and stored safely.", "success");
-            setUploadData({ title: "", description: "", tags: "" });
-            setSelectedFile(null);
-            e.target.reset();
-            
-            // Refresh documents list & Redirect
-            await fetchUserDocuments();
-            setTimeout(() => {
-                router.push("/dashboard/documents");
-            }, 2000);
 
         } catch (error) {
             console.error("Upload workflow sequence crashed:", error);
@@ -477,14 +527,36 @@ export default function DashboardPage() {
                             </div>
                         )}
  
-                        <div>
-                            <h2 className="text-lg sm:text-xl font-extrabold text-[#004f95] uppercase tracking-wider flex items-center gap-2">
-                                <svg className="w-5 h-5 text-[#00adef]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                </svg>
-                                Upload documents, images
-                            </h2>
-                            <p className="text-xs text-slate-400 font-medium mt-1">Securely register and encrypt your files in the cloud vault.</p>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <h2 className="text-lg sm:text-xl font-extrabold text-[#004f95] uppercase tracking-wider flex items-center gap-2">
+                                    <svg className="w-5 h-5 text-[#00adef]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        {editId ? (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        ) : (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                        )}
+                                    </svg>
+                                    {editId ? "Edit document details" : "Upload documents, images"}
+                                </h2>
+                                <p className="text-xs text-slate-400 font-medium mt-1">
+                                    {editId ? "Update metadata fields for this secure node." : "Securely register and encrypt your files in the cloud vault."}
+                                </p>
+                            </div>
+                            {editId && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setUploadData({ title: "", description: "", tags: "" });
+                                        setSelectedFile(null);
+                                        setEditId(null);
+                                        router.push("/dashboard");
+                                    }}
+                                    className="text-[9px] font-black text-red-650 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-full uppercase tracking-wider transition border border-red-200/50 cursor-pointer"
+                                >
+                                    Cancel Edit
+                                </button>
+                            )}
                         </div>
  
                         <form onSubmit={handleUploadSubmit} className="space-y-5">
@@ -551,7 +623,7 @@ export default function DashboardPage() {
                                 </label>
                                 <input
                                     type="file"
-                                    required
+                                    required={!editId}
                                     accept="image/*,application/pdf"
                                     onChange={(e) => setSelectedFile(e.target.files[0])}
                                     className="w-full border border-dashed border-slate-200 hover:border-[#00adef] p-4 rounded-xl text-xs font-bold text-slate-500 bg-slate-50/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-gradient-to-r file:from-[#00adef] file:to-[#007cd1] file:text-white hover:file:opacity-90 file:transition-all file:cursor-pointer cursor-pointer transition-colors duration-350"
@@ -566,7 +638,7 @@ export default function DashboardPage() {
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                 </svg>
-                                {isUploading ? "Encrypting & Saving..." : "Save Document Entry"}
+                                {editId ? (isUploading ? "Saving updates..." : "Update Document Entry") : (isUploading ? "Encrypting & Saving..." : "Save Document Entry")}
                             </button>
                         </form>
                     </section>
