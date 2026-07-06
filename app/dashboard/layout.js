@@ -10,6 +10,26 @@ export default function DashboardLayout({ children }) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const router = useRouter();
+    
+    const [currentPath, setCurrentPath] = useState("");
+    const [isChatActive, setIsChatActive] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const checkLocation = () => {
+                setCurrentPath(window.location.pathname);
+                setIsChatActive(window.location.search.includes("chat=true"));
+            };
+            checkLocation();
+            
+            window.addEventListener("popstate", checkLocation);
+            const interval = setInterval(checkLocation, 200);
+            return () => {
+                window.removeEventListener("popstate", checkLocation);
+                clearInterval(interval);
+            };
+        }
+    }, []);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -74,16 +94,34 @@ export default function DashboardLayout({ children }) {
                     </Link>
  
                     {/* Navigation Menu & Profile Dropdown */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <Link
+                            href="/dashboard"
+                            className={`text-xs font-bold transition px-3.5 py-2 rounded-xl whitespace-nowrap shadow-sm border ${
+                                currentPath === "/dashboard" && !isChatActive
+                                    ? "text-[#007cd1] bg-blue-50/40 hover:bg-blue-50 border-blue-200/50"
+                                    : "text-gray-700 bg-gray-100 hover:bg-gray-200 border-transparent"
+                            }`}
+                        >
+                            Upload
+                        </Link>
                         <Link
                             href="/dashboard?chat=true"
-                            className="lg:hidden text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition px-3.5 py-2 rounded-xl whitespace-nowrap"
+                            className={`lg:hidden text-xs font-bold transition px-3.5 py-2 rounded-xl whitespace-nowrap shadow-sm border ${
+                                currentPath === "/dashboard" && isChatActive
+                                    ? "text-[#007cd1] bg-blue-50/40 hover:bg-blue-50 border-blue-200/50"
+                                    : "text-gray-700 bg-gray-100 hover:bg-gray-200 border-transparent"
+                            }`}
                         >
                             AI Chat
                         </Link>
                         <Link
                             href="/dashboard/documents"
-                            className="text-xs font-bold text-[#007cd1] bg-blue-50/40 hover:bg-blue-50 border border-blue-200/50 transition px-3.5 py-2 rounded-xl whitespace-nowrap shadow-sm"
+                            className={`text-xs font-bold transition px-3.5 py-2 rounded-xl whitespace-nowrap shadow-sm border ${
+                                currentPath.startsWith("/dashboard/documents")
+                                    ? "text-[#007cd1] bg-blue-50/40 hover:bg-blue-50 border-blue-200/50"
+                                    : "text-gray-700 bg-gray-100 hover:bg-gray-200 border-transparent"
+                            }`}
                         >
                             <span className="hidden sm:inline">Saved All Documents</span>
                             <span className="sm:hidden">Records</span>

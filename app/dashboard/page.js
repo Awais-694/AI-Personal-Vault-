@@ -452,13 +452,13 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
                 {/* PANEL LEFT: FILE STREAM DATA INPUT FORMS (Enhanced Professional Layered White Card) */}
-                <div className="relative w-full">
+                <div className={`relative w-full ${isMobileChatOpen ? "hidden lg:block" : ""}`}>
                     {/* Underlay Card 1 (Cyan/Light Blue Gradient - tilted counter-clockwise) */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[#00bfff] to-[#00adef] rounded-[40px] transform -rotate-2 translate-x-[-6px] translate-y-[-4px] shadow-lg opacity-90 pointer-events-none"></div>
                     
                     {/* Underlay Card 2 (Deep Blue Gradient - tilted clockwise) */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[#0089e0] to-[#0062ff] rounded-[40px] transform rotate-2 translate-x-[6px] translate-y-[4px] shadow-lg opacity-95 pointer-events-none"></div>
-
+ 
                     <section className="relative z-10 bg-white p-8 md:p-10 border border-slate-100/80 rounded-[40px] shadow-2xl space-y-6">
                         {systemMessage.text && (
                             <div className={`p-4 rounded-2xl text-xs font-bold border transition-all duration-300 flex items-center gap-2 ${
@@ -470,7 +470,7 @@ export default function DashboardPage() {
                                 <span>{systemMessage.text}</span>
                             </div>
                         )}
-
+ 
                         <div>
                             <h2 className="text-lg sm:text-xl font-extrabold text-[#004f95] uppercase tracking-wider flex items-center gap-2">
                                 <svg className="w-5 h-5 text-[#00adef]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -480,7 +480,7 @@ export default function DashboardPage() {
                             </h2>
                             <p className="text-xs text-slate-400 font-medium mt-1">Securely register and encrypt your files in the cloud vault.</p>
                         </div>
-
+ 
                         <form onSubmit={handleUploadSubmit} className="space-y-5">
                             <div>
                                 <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-550 mb-1.5">
@@ -498,7 +498,7 @@ export default function DashboardPage() {
                                     className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border-b-2 border-slate-200 focus:border-[#00adef] py-3 px-3 rounded-t-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300"
                                 />
                             </div>
-
+ 
                             <div>
                                 <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-550 mb-1.5">
                                     <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -514,7 +514,7 @@ export default function DashboardPage() {
                                     className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border-b-2 border-slate-200 focus:border-[#00adef] py-3 px-3 rounded-t-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300 resize-none"
                                 />
                             </div>
-
+ 
                             <div>
                                 <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-550 mb-1.5">
                                     <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -530,7 +530,7 @@ export default function DashboardPage() {
                                     className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border-b-2 border-slate-200 focus:border-[#00adef] py-3 px-3 rounded-t-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300"
                                 />
                             </div>
-
+ 
                             <div>
                                 <label className="flex flex-wrap items-center justify-between gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-550 mb-1.5">
                                     <span className="flex items-center gap-1.5">
@@ -551,7 +551,7 @@ export default function DashboardPage() {
                                     className="w-full border border-dashed border-slate-200 hover:border-[#00adef] p-4 rounded-xl text-xs font-bold text-slate-500 bg-slate-50/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-gradient-to-r file:from-[#00adef] file:to-[#007cd1] file:text-white hover:file:opacity-90 file:transition-all file:cursor-pointer cursor-pointer transition-colors duration-350"
                                 />
                             </div>
-
+ 
                             <button
                                 type="submit"
                                 disabled={isUploading}
@@ -565,24 +565,22 @@ export default function DashboardPage() {
                         </form>
                     </section>
                 </div>
-
+ 
                 {/* PANEL RIGHT: INTELLIGENT CONTEXT-DRIVEN AI RETRIEVAL CONSOLE */}
-                <section className={`bg-white p-6 border border-gray-100 rounded-3xl shadow-sm space-y-4 justify-between min-h-[480px] lg:flex lg:flex-col ${
+                <section className={`bg-white p-6 border border-gray-150 rounded-3xl shadow-sm space-y-4 justify-between min-h-[480px] flex flex-col ${
                     isMobileChatOpen 
-                        ? "fixed inset-0 z-50 rounded-none p-6 flex flex-col justify-between lg:static lg:inset-auto lg:z-0 lg:rounded-3xl lg:p-6 lg:flex" 
-                        : "hidden"
+                        ? "w-full" 
+                        : "hidden lg:flex"
                 }`}>
                     <div className="flex justify-between items-center pb-3 border-b border-blue-50 lg:border-none lg:pb-0">
                         {/* Mobile Header Navbar inside Chat */}
                         <div className="lg:hidden flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-[#00adef] to-[#007cd1] text-white flex items-center justify-center font-black text-xs">
-                                V
-                            </div>
-                            <span className="font-black text-[10px] uppercase text-gray-900 tracking-wider">
-                                PSV
+                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                            <span className="font-black text-xs uppercase text-[#007cd1] tracking-wider">
+                                AI Assistant
                             </span>
                         </div>
-
+ 
                         {/* Redesigned Premium AI Assistant Heading */}
                         <div className="hidden lg:flex items-center gap-2.5 text-left">
                             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
@@ -590,17 +588,6 @@ export default function DashboardPage() {
                                 AI Assistant
                             </h2>
                         </div>
-                        
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setIsMobileChatOpen(false);
-                                router.push("/dashboard");
-                            }}
-                            className="text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 transition px-3.5 py-1.5 rounded-xl whitespace-nowrap shadow-sm lg:hidden"
-                        >
-                            ← Back to Panel
-                        </button>
                     </div>
 
                     {/* Chat Messages Stream Container */}
