@@ -368,9 +368,13 @@ function DashboardContent() {
 
                             // Render a gorgeous card with only description and tags as requested!
                             return (
-                                <div key={i} className="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 space-y-2 border-l-4 border-l-[#00adef] text-left w-full overflow-hidden break-words">
+                                <div key={i} className="p-4 bg-white border border-slate-200 rounded-[24px] shadow-sm hover:shadow-md transition-all duration-300 space-y-3 border-l-4 border-l-[#00adef] text-left w-full overflow-hidden break-words">
+                                    <div className="flex items-center gap-1.5 pb-2 border-b border-slate-100">
+                                        <span className="text-xs">📄</span>
+                                        <span className="text-[9px] font-black uppercase tracking-wider text-[#007cd1]">Secure Asset Metadata Details</span>
+                                    </div>
                                     {cleanDescription && (
-                                        <div className="space-y-0.5 w-full">
+                                        <div className="space-y-1 w-full">
                                             <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Description:</span>
                                             <p className="text-[10px] text-slate-650 font-bold leading-relaxed break-words whitespace-pre-line">
                                                 {cleanDescription}
@@ -381,11 +385,15 @@ function DashboardContent() {
                                         <div className="space-y-1">
                                             <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Tags:</span>
                                             <div className="flex flex-wrap gap-1">
-                                                {block.tags.split(",").map((tag, tIdx) => (
-                                                    <span key={tIdx} className="bg-blue-50 text-[#007cd1] text-[8px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                                                        #{tag.trim()}
-                                                    </span>
-                                                ))}
+                                                {block.tags.split(",").map((tag, tIdx) => {
+                                                    const cleanTag = tag.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+                                                    if (!cleanTag) return null;
+                                                    return (
+                                                        <span key={tIdx} className="bg-blue-50 text-[#007cd1] text-[8px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                            #{cleanTag}
+                                                        </span>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}
@@ -402,11 +410,11 @@ function DashboardContent() {
                             // Strip out raw URLs from the conversational text bubble
                             let cleanLine = line.replace(/https?:\/\/[^\s\)]+/g, '').trim();
                             
-                            // Filter out raw link lines, empty bold wrappers, or link headers
+                            // Filter out raw link lines, empty bold wrappers, or link headers, plus lone hyphens, underscores, asterisks
                             if (
                                 !cleanLine || 
                                 cleanLine.toLowerCase().includes('link') || 
-                                cleanLine.replace(/[\*\s:]/g, '') === ''
+                                cleanLine.replace(/[\*\s:_\-\.]/g, '') === ''
                             ) {
                                 return null;
                             }
