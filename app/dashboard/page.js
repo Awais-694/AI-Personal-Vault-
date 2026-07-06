@@ -398,14 +398,14 @@ function DashboardContent() {
                         
                         // Split by newlines to preserve spacing
                         return trimmedContent.split('\n').map((line, lineIdx) => {
-                            const cleanLine = line.trim();
+                            // Strip out raw URLs from the conversational text bubble
+                            let cleanLine = line.replace(/https?:\/\/[^\s\)]+/g, '').trim();
+                            
                             // Filter out raw link lines, empty bold wrappers, or link headers
                             if (
                                 !cleanLine || 
-                                cleanLine.startsWith('http://') || 
-                                cleanLine.startsWith('https://') || 
                                 cleanLine.toLowerCase().includes('link') || 
-                                cleanLine === '**'
+                                cleanLine.replace(/[\*\s:]/g, '') === ''
                             ) {
                                 return null;
                             }
@@ -444,12 +444,11 @@ function DashboardContent() {
                             {urlsFound.map((url, idx) => {
                                 const cleanUrl = url.replace(/[\.\,\)]$/, '');
                                 
-                                // Find matched document to link to its records card
-                                const matchedDoc = documents.find(d => d.fileUrl === cleanUrl);
                                 const targetHref = matchedDoc 
                                     ? `/dashboard/documents#${matchedDoc._id}` 
                                     : cleanUrl;
                                 const isInternal = !!matchedDoc;
+                                const isImage = cleanUrl.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i);
 
                                 return (
                                     <Link
@@ -459,7 +458,15 @@ function DashboardContent() {
                                         className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm transition group text-left w-full overflow-hidden cursor-pointer"
                                     >
                                         <div className="flex items-center gap-2.5 min-w-0 mr-2">
-                                            <span className="text-base shrink-0">📂</span>
+                                            {isImage ? (
+                                                <img 
+                                                    src={cleanUrl} 
+                                                    alt="Preview" 
+                                                    className="w-10 h-10 object-cover rounded-xl border border-slate-100 shrink-0" 
+                                                />
+                                            ) : (
+                                                <span className="text-base shrink-0">📂</span>
+                                            )}
                                             <div className="min-w-0">
                                                 <p className="text-[10px] font-black text-gray-800 uppercase tracking-tight truncate max-w-[150px] sm:max-w-[250px]">
                                                     {matchedDoc ? matchedDoc.title : "External Secured Asset"}
