@@ -142,9 +142,9 @@ function ViewerContent() {
                 )}
 
                 {/* Content Display Canvas */}
-                <div className="w-full min-h-[500px] flex items-center justify-center p-6 bg-slate-900/5 overflow-auto relative">
+                <div className="w-full min-h-[500px] flex items-center justify-center p-3 sm:p-4 bg-slate-900/5 overflow-auto relative">
                     {fileType === "image" ? (
-                        <div className="max-w-full max-h-[70vh] flex items-center justify-center overflow-hidden transition-all duration-300">
+                        <div className="max-w-full max-h-[85vh] flex items-center justify-center overflow-hidden transition-all duration-300">
                             <img
                                 src={fileUrl}
                                 alt={title}
@@ -152,7 +152,7 @@ function ViewerContent() {
                                     transform: `rotate(${rotation}deg) scale(${scale})`,
                                     transition: "transform 0.2s ease-out"
                                 }}
-                                className="max-w-full max-h-[70vh] object-contain rounded-2xl shadow-md border border-white"
+                                className="max-w-full max-h-[85vh] object-contain rounded-[32px] shadow-xl border-4 border-[#007cd1]"
                             />
                         </div>
                     ) : fileType === "pdf" ? (
