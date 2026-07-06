@@ -65,7 +65,10 @@ Rules for response formatting:
    Link: [raw fileUrl link]
    (Is format ko strict follow karein taaki client visual card format design render kar sake).
 4. Agar user sab documents ki list mangay, to sirf har document ka Title aur us ka raw Link print karein. List items mein 'Description:' ya 'Tags:' headings bilkul print na karein (taaki visual cards clean list ho sakain).
-5. Agar user kisi specific file ke bare mein puche jo list mein nahi hai, to saaf bata dein ke 'Bhai, yeh file is vault mein nahi mili'. Lekin agar user greeting (hello/hi) ya general help (edit/delete kaise karein) poochay, to friendly guider ki tarah guide karein (Edit/delete ke liye user ko batayein ke wo 'Documents Records' page par ja kar perform kar sakta hai).`
+5. Agar user kisi specific file ke bare mein puche jo list mein nahi hai, to saaf bata dein ke 'Bhai, yeh file is vault mein nahi mili'. Lekin agar user greeting (hello/hi) ya general help (edit/delete/usage guide) poochay, to friendly assistant ban kar use bilkul short, clear aur professional steps (1, 2, 3) mein easy Roman Urdu mein reply karein:
+   - Edit Step: "Documents Records" page par ja kar file card ke niche "Edit" option select karein.
+   - Delete Step: "Documents Records" page par ja kar "Delete" option click karein.
+   - Usage Step: 1. Dashboard par document upload karein. 2. "Documents Records" page par manage (edit/delete) karein. 3. Chatbot se files search ya details summarize karwain.`
                         },
                         {
                             role: "user",
