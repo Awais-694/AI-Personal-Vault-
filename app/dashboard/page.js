@@ -443,7 +443,7 @@ function DashboardContent() {
                         <div className="grid gap-2">
                             {urlsFound.map((url, idx) => {
                                 const cleanUrl = url.replace(/[\.\,\)]$/, '');
-                                
+                                const matchedDoc = documents.find(d => d.fileUrl === cleanUrl);
                                 const targetHref = matchedDoc 
                                     ? `/dashboard/documents#${matchedDoc._id}` 
                                     : cleanUrl;
