@@ -495,7 +495,7 @@ export default function DashboardPage() {
                                     placeholder="e.g., University Certificate"
                                     value={uploadData.title}
                                     onChange={(e) => setUploadData({ ...uploadData, title: e.target.value })}
-                                    className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border-b-2 border-slate-200 focus:border-[#00adef] py-3 px-3 rounded-t-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300"
+                                    className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-[#00adef] focus:ring-4 focus:ring-blue-100/30 py-3.5 px-4 rounded-2xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300"
                                 />
                             </div>
  
@@ -511,7 +511,7 @@ export default function DashboardPage() {
                                     placeholder="e.g., Scan copy of official document or image receipt."
                                     value={uploadData.description}
                                     onChange={(e) => setUploadData({ ...uploadData, description: e.target.value })}
-                                    className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border-b-2 border-slate-200 focus:border-[#00adef] py-3 px-3 rounded-t-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300 resize-none"
+                                    className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-[#00adef] focus:ring-4 focus:ring-blue-100/30 py-3.5 px-4 rounded-2xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300 resize-none"
                                 />
                             </div>
  
@@ -527,7 +527,7 @@ export default function DashboardPage() {
                                     placeholder="e.g., degree, certificate, receipt, invoice"
                                     value={uploadData.tags}
                                     onChange={(e) => setUploadData({ ...uploadData, tags: e.target.value })}
-                                    className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border-b-2 border-slate-200 focus:border-[#00adef] py-3 px-3 rounded-t-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300"
+                                    className="w-full bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border border-slate-200 focus:border-[#00adef] focus:ring-4 focus:ring-blue-100/30 py-3.5 px-4 rounded-2xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-300"
                                 />
                             </div>
  
