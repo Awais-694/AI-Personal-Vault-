@@ -17,6 +17,25 @@ function ViewerContent() {
     const [rotation, setRotation] = useState(0);
     const [scale, setScale] = useState(1);
 
+    const handleDownload = async () => {
+        try {
+            const res = await fetch(fileUrl);
+            const blob = await res.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            // Extract extension or fallback
+            const ext = fileUrl.split('.').pop().split('?')[0] || 'jpg';
+            a.download = `${title.replace(/\s+/g, '_')}.${ext}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            window.open(fileUrl, "_blank");
+        }
+    };
+
     useEffect(() => {
         if (!fileUrl) {
             router.push("/dashboard/documents");
@@ -89,11 +108,22 @@ function ViewerContent() {
                             {/* Rotate */}
                             <button
                                 onClick={() => setRotation(prev => (prev + 90) % 360)}
-                                className="p-2 hover:bg-blue-50 text-slate-500 hover:text-[#007cd1] rounded-xl transition duration-200 outline-none cursor-pointer"
+                                className="hidden sm:inline-block p-2 hover:bg-blue-50 text-slate-500 hover:text-[#007cd1] rounded-xl transition duration-200 outline-none cursor-pointer"
                                 title="Rotate 90°"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6H16" />
+                                </svg>
+                            </button>
+
+                            {/* Download */}
+                            <button
+                                onClick={handleDownload}
+                                className="p-2 hover:bg-blue-50 text-slate-500 hover:text-[#007cd1] rounded-xl transition duration-200 outline-none cursor-pointer"
+                                title="Download Image"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
                             </button>
                             
