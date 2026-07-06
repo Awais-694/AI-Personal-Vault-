@@ -447,7 +447,7 @@ function DashboardContent() {
                                 // Find matched document to link to its records card
                                 const matchedDoc = documents.find(d => d.fileUrl === cleanUrl);
                                 const targetHref = matchedDoc 
-                                    ? `/dashboard/documents/view?url=${encodeURIComponent(matchedDoc.fileUrl)}&title=${encodeURIComponent(matchedDoc.title)}&type=${matchedDoc.fileType}` 
+                                    ? `/dashboard/documents#${matchedDoc._id}` 
                                     : cleanUrl;
                                 const isInternal = !!matchedDoc;
 
@@ -465,7 +465,7 @@ function DashboardContent() {
                                                     {matchedDoc ? matchedDoc.title : "External Secured Asset"}
                                                 </p>
                                                 <p className="text-[8px] text-[#007cd1] font-bold truncate max-w-[150px] sm:max-w-[250px]">
-                                                    {isInternal ? "Open Interactive Viewer" : cleanUrl}
+                                                    {isInternal ? "Saved in Vault Records" : cleanUrl}
                                                 </p>
                                             </div>
                                         </div>
