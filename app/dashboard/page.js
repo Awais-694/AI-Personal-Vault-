@@ -739,6 +739,20 @@ function DashboardContent() {
                                     >
                                         List All Saved Docs
                                     </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => handleChatSubmit(e, "How do I edit or delete my saved documents in this vault?")}
+                                        className="border border-blue-200/50 bg-blue-50/30 hover:bg-blue-50/80 hover:scale-102 hover:shadow-sm text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-300"
+                                    >
+                                        How to Edit/Delete?
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => handleChatSubmit(e, "Bhai, please guide me on how to use this AI Personal Vault application?")}
+                                        className="border border-blue-200/50 bg-blue-50/30 hover:bg-blue-50/80 hover:scale-102 hover:shadow-sm text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-300"
+                                    >
+                                        App Usage Guide
+                                    </button>
                                 </>
                             ) : (
                                 <>
@@ -755,6 +769,13 @@ function DashboardContent() {
                                         className="border border-blue-200/50 bg-blue-50/30 hover:bg-blue-50/80 hover:scale-102 hover:shadow-sm text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-300"
                                     >
                                         List All Saved Docs
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => handleChatSubmit(e, "Bhai, please guide me on how to use this AI Personal Vault application?")}
+                                        className="border border-blue-200/50 bg-blue-50/30 hover:bg-blue-50/80 hover:scale-102 hover:shadow-sm text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full transition-all duration-300"
+                                    >
+                                        App Usage Guide
                                     </button>
                                 </>
                             )}
