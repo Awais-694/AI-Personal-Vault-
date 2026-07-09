@@ -136,7 +136,7 @@ function DashboardContent() {
 
         setIsUploading(true);
         const sizeStr = selectedFile ? ` (${formatFileSize(selectedFile.size)})` : "";
-        triggerSystemAlert(editId ? `Saving updates...${sizeStr}` : `Streaming binary matrix directly to Cloudinary...${sizeStr}`, "info");
+        triggerSystemAlert(editId ? `Saving updates...${sizeStr}` : `Uploading your file...${sizeStr}`, "info");
 
         try {
             let fileUrl = null;
