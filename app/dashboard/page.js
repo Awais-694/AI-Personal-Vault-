@@ -117,6 +117,15 @@ function DashboardContent() {
         }
     };
 
+    const formatFileSize = (bytes) => {
+        if (!bytes) return "0 Bytes";
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    };
+
     // 2. Binary Upload Stream Runner Routine
     const handleUploadSubmit = async (e) => {
         e.preventDefault();
@@ -126,28 +135,45 @@ function DashboardContent() {
         }
 
         setIsUploading(true);
-        triggerSystemAlert(editId ? "Saving updates..." : "Streaming binary matrix directly to Cloudinary...", "info");
+        const sizeStr = selectedFile ? ` (${formatFileSize(selectedFile.size)})` : "";
+        triggerSystemAlert(editId ? `Saving updates...${sizeStr}` : `Streaming binary matrix directly to Cloudinary...${sizeStr}`, "info");
 
         try {
             let fileUrl = null;
             let fileType = null;
 
             if (selectedFile) {
+                // 1. Get secure signature and credentials from GET /api/upload
+                const sigRes = await fetch("/api/upload");
+                const sigData = await sigRes.json();
+                
+                if (!sigData.success) {
+                    throw new Error(sigData.message || "Failed to generate Cloudinary signature.");
+                }
+
+                // 2. Build FormData for direct Cloudinary upload
                 const uploadFormData = new FormData();
                 uploadFormData.append("file", selectedFile);
+                uploadFormData.append("api_key", sigData.apiKey);
+                uploadFormData.append("timestamp", sigData.timestamp);
+                uploadFormData.append("signature", sigData.signature);
 
-                const cloudRes = await fetch("/api/upload", {
-                    method: "POST",
-                    body: uploadFormData,
-                });
+                // 3. Upload to Cloudinary REST endpoint directly
+                const cloudRes = await fetch(
+                    `https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`,
+                    {
+                        method: "POST",
+                        body: uploadFormData
+                    }
+                );
 
                 const cloudData = await cloudRes.json();
 
-                if (!cloudData.success) {
-                    throw new Error(cloudData.message || "Cloud link execution failed.");
+                if (cloudData.error) {
+                    throw new Error(cloudData.error.message || "Cloud provider upload failed.");
                 }
                 
-                fileUrl = cloudData.url;
+                fileUrl = cloudData.secure_url;
                 fileType = selectedFile.type.startsWith("image/") ? "image" : (selectedFile.type === "application/pdf" ? "pdf" : "other");
             }
 
@@ -657,6 +683,19 @@ function DashboardContent() {
                                     onChange={(e) => setSelectedFile(e.target.files[0])}
                                     className="w-full border border-dashed border-slate-200 hover:border-[#00adef] p-4 rounded-xl text-xs font-bold text-slate-500 bg-slate-50/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-gradient-to-r file:from-[#00adef] file:to-[#007cd1] file:text-white hover:file:opacity-90 file:transition-all file:cursor-pointer cursor-pointer transition-colors duration-350"
                                 />
+                                {selectedFile && (
+                                    <div className="mt-2.5 p-3 rounded-xl border border-slate-100 bg-[#00adef]/5 flex items-center justify-between gap-3 text-xs">
+                                        <div className="flex items-center gap-2 text-slate-700 font-semibold truncate">
+                                            <svg className="w-4 h-4 text-[#007cd1] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span className="truncate">{selectedFile.name}</span>
+                                        </div>
+                                        <span className="shrink-0 font-bold px-2 py-0.5 bg-[#007cd1]/10 text-[#007cd1] rounded-lg">
+                                            {formatFileSize(selectedFile.size)}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
  
                             <button
