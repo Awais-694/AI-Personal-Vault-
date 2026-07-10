@@ -394,8 +394,8 @@ function DashboardContent() {
         }
         
         return (
-            <div className="space-y-4 w-full">
-                <div className="text-xs font-semibold text-gray-700 leading-relaxed space-y-3">
+            <div className="space-y-4 w-full text-sm sm:text-xs">
+                <div className="font-semibold text-gray-700 leading-relaxed space-y-3">
                     {blocks.map((block, i) => {
                         if (block.type === "document") {
                             // Strip out any http/https links and "Link" keywords from the description to prevent URL clutter in card
@@ -409,25 +409,25 @@ function DashboardContent() {
                                 <div key={i} className="p-4 bg-white border border-slate-200 rounded-[24px] shadow-sm hover:shadow-md transition-all duration-300 space-y-3 border-l-4 border-l-[#00adef] text-left w-full overflow-hidden break-words">
                                     <div className="flex items-center gap-1.5 pb-2 border-b border-slate-100">
                                         <span className="text-xs">📄</span>
-                                        <span className="text-[9px] font-black uppercase tracking-wider text-[#007cd1]">Secure Asset Metadata Details</span>
+                                        <span className="text-[11px] sm:text-[9px] font-black uppercase tracking-wider text-[#007cd1]">Secure Asset Metadata Details</span>
                                     </div>
                                     {cleanDescription && (
                                         <div className="space-y-1 w-full">
-                                            <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Description:</span>
-                                            <p className="text-[10px] text-slate-650 font-bold leading-relaxed break-words whitespace-pre-line">
+                                            <span className="text-[10px] sm:text-[8px] font-black uppercase tracking-wider text-slate-400">Description:</span>
+                                            <p className="text-xs sm:text-[10px] text-slate-650 font-bold leading-relaxed break-words whitespace-pre-line">
                                                 {cleanDescription}
                                             </p>
                                         </div>
                                     )}
                                     {block.tags && (
                                         <div className="space-y-1">
-                                            <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Tags:</span>
+                                            <span className="text-[10px] sm:text-[8px] font-black uppercase tracking-wider text-slate-400">Tags:</span>
                                             <div className="flex flex-wrap gap-1">
                                                 {block.tags.split(",").map((tag, tIdx) => {
                                                     const cleanTag = tag.replace(/[^a-zA-Z0-9\s]/g, '').trim();
                                                     if (!cleanTag) return null;
                                                     return (
-                                                        <span key={tIdx} className="bg-blue-50 text-[#007cd1] text-[8px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        <span key={tIdx} className="bg-blue-50 text-[#007cd1] text-[10px] sm:text-[8px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                                                             #{cleanTag}
                                                         </span>
                                                     );
@@ -486,7 +486,7 @@ function DashboardContent() {
                 {/* Detected Links section rendered beautifully */}
                 {urlsFound.length > 0 && (
                     <div className="space-y-2 pt-3 border-t border-slate-100">
-                        <div className="text-[9px] font-black uppercase text-[#007cd1] tracking-wider text-left">🔗 Detected Vault Secure Assets:</div>
+                        <div className="text-[11px] sm:text-[9px] font-black uppercase text-[#007cd1] tracking-wider text-left">🔗 Detected Vault Secure Assets:</div>
                         <div className="grid gap-2">
                             {urlsFound.map((url, idx) => {
                                 const cleanUrl = url;
@@ -515,15 +515,15 @@ function DashboardContent() {
                                                 <span className="text-xl shrink-0">📂</span>
                                             )}
                                             <div className="min-w-0">
-                                                <p className="text-[11px] sm:text-xs font-black text-gray-800 uppercase tracking-tight">
+                                                <p className="text-sm sm:text-xs font-black text-gray-800 uppercase tracking-tight">
                                                     {matchedDoc ? matchedDoc.title : "External Secured Asset"}
                                                 </p>
-                                                <p className="text-[9px] text-[#007cd1] font-bold">
+                                                <p className="text-[11px] sm:text-[9px] text-[#007cd1] font-bold">
                                                     {isInternal ? "Saved in Vault Records" : cleanUrl}
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className="w-full sm:w-auto text-center bg-[#00adef] group-hover:bg-[#0089e0] text-white text-[9px] font-black px-4 py-2.5 rounded-xl uppercase tracking-wider transition shrink-0">
+                                        <span className="w-full sm:w-auto text-center bg-[#00adef] group-hover:bg-[#0089e0] text-white text-[11px] sm:text-[9px] font-black px-4 py-2.5 rounded-xl uppercase tracking-wider transition shrink-0">
                                             {isInternal ? "View Document" : "Open Link"}
                                         </span>
                                     </Link>
@@ -713,7 +713,7 @@ function DashboardContent() {
                 </div>
  
                 {/* PANEL RIGHT: INTELLIGENT CONTEXT-DRIVEN AI RETRIEVAL CONSOLE */}
-                <section className={`bg-white p-7 border-2 border-[#007cd1]/35 rounded-[32px] shadow-sm space-y-4 justify-between min-h-[480px] flex flex-col ${
+                <section className={`bg-white p-4 sm:p-7 border-2 border-[#007cd1]/35 rounded-2xl sm:rounded-[32px] shadow-sm space-y-4 justify-between min-h-[650px] flex flex-col ${
                     isMobileChatOpen 
                         ? "w-full" 
                         : "hidden lg:flex"
@@ -737,7 +737,7 @@ function DashboardContent() {
                     </div>
 
                     {/* Chat Messages Stream Container */}
-                    <div className="px-1 py-5 bg-transparent flex-1 overflow-y-auto max-h-[300px] min-h-[250px] space-y-4 chat-scrollbar">
+                    <div className="px-1 py-3 bg-transparent flex-1 overflow-y-auto max-h-[580px] min-h-[450px] space-y-4 chat-scrollbar">
                         {chatMessages.map((msg) => {
                             const isBot = msg.sender === "bot";
                             return (
@@ -754,7 +754,7 @@ function DashboardContent() {
                                     )}
 
                                     {/* Bubble */}
-                                    <div className={`p-3.5 rounded-2xl text-xs font-medium leading-relaxed shadow-sm transition-all duration-300 ${
+                                    <div className={`p-3.5 rounded-2xl text-sm sm:text-xs font-medium leading-relaxed shadow-sm transition-all duration-300 ${
                                         isBot 
                                             ? "bg-gray-100/90 text-gray-800 rounded-tl-none max-w-[85%]" 
                                             : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none max-w-[85%] ml-auto"
@@ -865,12 +865,12 @@ function DashboardContent() {
                             placeholder="Type a message to search vault..."
                             value={aiQuery}
                             onChange={(e) => setAiQuery(e.target.value)}
-                            className="flex-1 border border-gray-200 bg-gray-50/20 hover:border-gray-300 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ease-in-out p-3 rounded-xl text-xs font-semibold outline-none shadow-sm focus:shadow-md disabled:opacity-50"
+                            className="flex-1 border border-gray-200 bg-gray-50/20 hover:border-gray-300 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ease-in-out p-3 rounded-xl text-sm sm:text-xs font-semibold outline-none shadow-sm focus:shadow-md disabled:opacity-50"
                         />
                         <button
                             type="submit"
                             disabled={isAiSearching}
-                            className="bg-gradient-to-r from-[#00adef] to-[#007cd1] hover:from-[#0089e0] hover:to-[#0062ff] text-white px-6 text-xs font-extrabold rounded-xl uppercase tracking-wider transition-all duration-300 hover:shadow-md active:scale-95 disabled:opacity-50 shrink-0"
+                            className="bg-gradient-to-r from-[#00adef] to-[#007cd1] hover:from-[#0089e0] hover:to-[#0062ff] text-white px-6 text-sm sm:text-xs font-extrabold rounded-xl uppercase tracking-wider transition-all duration-300 hover:shadow-md active:scale-95 disabled:opacity-50 shrink-0"
                         >
                             Send
                         </button>

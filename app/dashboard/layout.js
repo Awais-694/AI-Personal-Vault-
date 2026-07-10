@@ -185,7 +185,7 @@ export default function DashboardLayout({ children }) {
             </header>
 
             {/* Main Content Workspace viewport */}
-            <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8">
+            <main className="flex-1 py-4 px-2 sm:py-10 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
                     {children}
                 </div>
